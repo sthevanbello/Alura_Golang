@@ -102,35 +102,48 @@ func exibirOpcaoInvalida() {
 
 func iniciarMonitoramento() {
 	fmt.Println("Opção Selecionada: Iniciar Monitoramento")
-	site := "https://www.alura.com.br"
-	siteBinNotFound := "https://httpbin.org/status/404"
-	siteBinOk := "https://httpbin.org/status/200"
+	var sites [4]string
+	sites[0] = "https://www.alura.com.br"
+	sites[1] = "https://httpbin.org/status/404"
+	sites[2] = "https://httpbin.org/status/200"
 	// response, erro := http.Get(site) // Para ignorar um dos objetos retornados, podemos utilizar o operador null _
-	response, _ := http.Get(site)
-	responseNotFound, _ := http.Get(siteBinNotFound)
-	responseOk, _ := http.Get(siteBinOk)
-	fmt.Println(response.StatusCode)
-	fmt.Println(response.Status)
-	fmt.Println(response.Header)
-	fmt.Println(response.ContentLength)
-	fmt.Println(response.Request.Method)
-	fmt.Println(response.Request.RequestURI)
+	// response, _ := http.Get(site)
+	// responseNotFound, _ := http.Get(siteBinNotFound)
+	// responseOk, _ := http.Get(siteBinOk)
+	// fmt.Println(response.StatusCode)
+	// fmt.Println(response.Status)
+	// fmt.Println(response.Header)
+	// fmt.Println(response.ContentLength)
+	// fmt.Println(response.Request.Method)
+	// fmt.Println(response.Request.RequestURI)
+	fmt.Println()
+	for i := 0; i < len(sites); i++ {
+		response, _ := http.Get(sites[i])
+
+		if response.StatusCode == 200 {
+			fmt.Println("Site:", sites[i], " está funcionando corretamente")
+		} else if response.StatusCode == 404 {
+			fmt.Println("Rota não encontrada:", sites[i], " - Status: ", response.StatusCode)
+		}
+	}
+	fmt.Println()
 	fmt.Println("==============================")
 	// fmt.Println(erro)
 
-	if response.StatusCode == 200 {
-		fmt.Println("Site:", site, " está funcionando corretamente")
-	} else if response.StatusCode == 404 {
-		fmt.Println("Rota não encontrada:", site, " - Status: ", response.StatusCode)
-	}
+	// if response.StatusCode == 200 {
+	// 	fmt.Println("Site:", site, " está funcionando corretamente")
+	// } else if response.StatusCode == 404 {
+	// 	fmt.Println("Rota não encontrada:", site, " - Status: ", response.StatusCode)
+	// }
 
-	if responseNotFound.StatusCode == 404 {
-		fmt.Println("Response 404")
-	}
+	// if responseNotFound.StatusCode == 404 {
+	// 	fmt.Println("Response 404")
+	// }
 
-	if responseOk.StatusCode == 200 {
-		fmt.Println("Response OK 200")
-	} else {
-		fmt.Println(responseOk.Body)
-	}
+	// if responseOk.StatusCode == 200 {
+	// 	fmt.Println("Response OK 200")
+	// 	fmt.Println(responseOk.Body)
+	// } else {
+	// 	fmt.Println(responseOk.Body)
+	// }
 }
