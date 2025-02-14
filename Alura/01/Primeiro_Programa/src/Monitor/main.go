@@ -6,7 +6,11 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"time"
 )
+
+const timeLoops = 5
+const timeDelay = 5
 
 func main() {
 	clearScreen()
@@ -75,7 +79,8 @@ func exibirOpcoes(opcao int) {
 	case 0:
 		sairDoPrograma()
 	case 1:
-		iniciarMonitoramento()
+		// iniciarMonitoramento()
+		iniciarMonitoramentoSlice()
 	case 2:
 		fmt.Println("Opção Selecionada: Exibir Log de Monitoramento")
 	default:
@@ -101,21 +106,29 @@ func exibirOpcaoInvalida() {
 }
 
 func iniciarMonitoramento() {
-	fmt.Println("Opção Selecionada: Iniciar Monitoramento")
+	fmt.Println("Opção Selecionada: Iniciar Monitoramento utilizando Array")
 	var sites [4]string
 	sites[0] = "https://www.alura.com.br"
 	sites[1] = "https://httpbin.org/status/404"
 	sites[2] = "https://httpbin.org/status/200"
-	// response, erro := http.Get(site) // Para ignorar um dos objetos retornados, podemos utilizar o operador null _
-	// response, _ := http.Get(site)
-	// responseNotFound, _ := http.Get(siteBinNotFound)
-	// responseOk, _ := http.Get(siteBinOk)
-	// fmt.Println(response.StatusCode)
-	// fmt.Println(response.Status)
-	// fmt.Println(response.Header)
-	// fmt.Println(response.ContentLength)
-	// fmt.Println(response.Request.Method)
-	// fmt.Println(response.Request.RequestURI)
+
+	monitorarSitesArray(sites)
+}
+
+func iniciarMonitoramentoSlice() {
+	fmt.Println("Opção Selecionada: Iniciar Monitoramento utilizando Slice")
+	sites := []string{
+		"https://www.alura.com.br",
+		"https://httpbin.org/status/404",
+		"https://httpbin.org/status/200",
+	}
+	// fmt.Println(sites)
+	sites = append(sites, "https://www.meutimao.com.br")
+	// fmt.Println(sites)
+	monitorarSitesSlice(sites)
+}
+
+func monitorarSitesArray(sites [4]string) {
 	fmt.Println()
 	for i := 0; i < len(sites); i++ {
 		response, _ := http.Get(sites[i])
@@ -128,22 +141,41 @@ func iniciarMonitoramento() {
 	}
 	fmt.Println()
 	fmt.Println("==============================")
-	// fmt.Println(erro)
+}
 
-	// if response.StatusCode == 200 {
-	// 	fmt.Println("Site:", site, " está funcionando corretamente")
-	// } else if response.StatusCode == 404 {
-	// 	fmt.Println("Rota não encontrada:", site, " - Status: ", response.StatusCode)
-	// }
+func monitorarSitesSlice(sites []string) {
+	fmt.Println()
+	fmt.Println(sites)
+	fmt.Println(len(sites))
+	// for i := 0; i < len(sites); i++ {
+	// 	response, _ := http.Get(sites[i])
 
-	// if responseNotFound.StatusCode == 404 {
-	// 	fmt.Println("Response 404")
+	// 	if response.StatusCode == 200 {
+	// 		fmt.Println("Site:", sites[i], " está funcionando corretamente")
+	// 	} else if response.StatusCode == 404 {
+	// 		fmt.Println("Rota não encontrada:", sites[i], " - Status: ", response.StatusCode)
+	// 	} else {
+	// 		fmt.Println("O site:", sites[i], "Não está respondendo. Status Code:", response.StatusCode)
+	// 	}
 	// }
+	for i := 0; i < timeLoops; i++ {
+		for i, site := range sites {
+			fmt.Println("Site: ", i+1)
+			testarSite(site)
+		}
+		time.Sleep(timeDelay * time.Second)
+		fmt.Println("---------------------------------------------------------------------------------------------")
+	}
+	fmt.Println()
+}
 
-	// if responseOk.StatusCode == 200 {
-	// 	fmt.Println("Response OK 200")
-	// 	fmt.Println(responseOk.Body)
-	// } else {
-	// 	fmt.Println(responseOk.Body)
-	// }
+func testarSite(site string) {
+	response, _ := http.Get(site)
+	if response.StatusCode == 200 {
+		fmt.Println("Site:", site, " está funcionando corretamente - Status Code:", response.StatusCode)
+	} else if response.StatusCode == 404 {
+		fmt.Println("Rota não encontrada:", site, " - Status Code: ", response.StatusCode)
+	} else {
+		fmt.Println("O site:", site, "Não está respondendo. Status Code:", response.StatusCode)
+	}
 }
