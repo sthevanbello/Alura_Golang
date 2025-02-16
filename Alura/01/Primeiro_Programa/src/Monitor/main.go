@@ -247,8 +247,8 @@ func registrarLog(site string, status int) {
 		tituloColorido = fmt.Sprintf(color.GreenString("==================================== Registro de Log - Ok ===================================="))
 		mensagem = "Sucesso"
 	}
-
-	linha := fmt.Sprintf("Site: %-50sStatus: %-10d Retorno: %s\n", site, status, mensagem)
+	time := fmt.Sprintf(time.Now().Local().Format("2006-01-02 15:04:05"))
+	linha := fmt.Sprintf("Site: %-50sStatus: %-10d Retorno: %-10s Horário: %s\n", site, status, mensagem, time)
 	fmt.Println(tituloColorido)
 
 	fmt.Println(site, status)
@@ -262,4 +262,5 @@ func registrarLog(site string, status int) {
 	}
 	arquivo.WriteString(linha)
 	fmt.Println(linha)
+	arquivo.Close()
 }
