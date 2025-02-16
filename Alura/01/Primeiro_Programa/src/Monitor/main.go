@@ -1,12 +1,17 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 	"time"
+
+	"github.com/fatih/color"
 )
 
 const timeLoops = 5
@@ -37,9 +42,9 @@ func clearScreen() {
 }
 
 func exibirIntroducao(nome string, versao float64) {
-
+	tituloColorido := fmt.Sprintf(color.RedString("====== Monitor de sites ======"))
+	fmt.Println(tituloColorido)
 	fmt.Println()
-	fmt.Println("====== Monitor de sites ======")
 	fmt.Println("Bem vindo,", nome)
 	fmt.Println("Versão do monitor:", versao)
 	fmt.Println("==============================")
@@ -80,7 +85,8 @@ func exibirOpcoes(opcao int) {
 		sairDoPrograma()
 	case 1:
 		// iniciarMonitoramento()
-		iniciarMonitoramentoSlice()
+		// iniciarMonitoramentoSlice()
+		monitorarSitesFile()
 	case 2:
 		fmt.Println("Opção Selecionada: Exibir Log de Monitoramento")
 	default:
@@ -89,6 +95,7 @@ func exibirOpcoes(opcao int) {
 }
 
 func sairDoPrograma() {
+	clearScreen()
 	fmt.Println()
 	fmt.Println("==============================")
 	fmt.Println("Opção selecionada: Sair")
@@ -169,13 +176,90 @@ func monitorarSitesSlice(sites []string) {
 	fmt.Println()
 }
 
+func monitorarSitesFile() {
+	sites := lerArquivoSites()
+	fmt.Println()
+	for i := 0; i < timeLoops; i++ {
+		tituloColorido := fmt.Sprintf(color.CyanString("--------------------------- Monitorando Sites do Arquivo -----------------------------------"))
+		fmt.Println(tituloColorido)
+
+		colored := fmt.Sprintf("\x1b[%dm%s\x1b[0m", 34, "Hello")
+		fmt.Println(colored)
+
+		for i, site := range sites {
+			fmt.Println("Site: ", i+1)
+			testarSite(site)
+		}
+		time.Sleep(timeDelay * time.Second)
+	}
+	fmt.Println("---------------------------------------------------------------------------------------------")
+	fmt.Println()
+}
+
 func testarSite(site string) {
-	response, _ := http.Get(site)
-	if response.StatusCode == 200 {
+	response, err := http.Get(site)
+	if err != nil {
+		fmt.Println(err)
+	} else if response.StatusCode == 200 {
 		fmt.Println("Site:", site, " está funcionando corretamente - Status Code:", response.StatusCode)
 	} else if response.StatusCode == 404 {
 		fmt.Println("Rota não encontrada:", site, " - Status Code: ", response.StatusCode)
 	} else {
 		fmt.Println("O site:", site, "Não está respondendo. Status Code:", response.StatusCode)
 	}
+	registrarLog(site, response.StatusCode)
+}
+
+func lerArquivoSites() []string {
+	clearScreen()
+	var retorno []string
+	// arquivo, err := os.Open("sites.txt")
+	arquivo, err := os.Open("sites.txt")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		// fmt.Println(string(arquivo))
+		leitor := bufio.NewReader(arquivo)
+		for {
+			linha, err := leitor.ReadString('\n')
+			fmt.Println("--------------------------- Monitorando Sites do Arquivo -----------------------------------")
+			fmt.Println(linha)
+			linha = strings.TrimSpace(linha)
+			retorno = append(retorno, linha)
+			if err == io.EOF {
+				// fmt.Println(err)
+				break
+			}
+
+		}
+	}
+	arquivo.Close()
+	return retorno
+}
+
+func registrarLog(site string, status int) {
+	var tituloColorido string
+	var mensagem string
+	if status != 200 {
+		tituloColorido = fmt.Sprintf(color.RedString("==================================== Registro de Log - Error ===================================="))
+		mensagem = "Erro"
+	} else {
+		tituloColorido = fmt.Sprintf(color.GreenString("==================================== Registro de Log - Ok ===================================="))
+		mensagem = "Sucesso"
+	}
+
+	linha := fmt.Sprintf("Site: %-50sStatus: %-10d Retorno: %s\n", site, status, mensagem)
+	fmt.Println(tituloColorido)
+
+	fmt.Println(site, status)
+
+	fimColorido := fmt.Sprintf(color.HiBlueString("==================================== Registro de Log - Fim ===================================="))
+	fmt.Println(fimColorido)
+
+	arquivo, err := os.OpenFile("log.txt", os.O_CREATE|os.O_RDWR|os.O_APPEND, 0666)
+	if err != nil {
+		fmt.Println(err)
+	}
+	arquivo.WriteString(linha)
+	fmt.Println(linha)
 }

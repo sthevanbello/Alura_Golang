@@ -1,0 +1,6 @@
+https://www.alura.com.br
+https://httpbin.org/status/404
+https://httpbin.org/status/200
+https://www.google.com.br
+https://www.linkedin.com
+https://www.youtube.com
