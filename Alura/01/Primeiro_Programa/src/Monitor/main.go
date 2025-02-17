@@ -69,17 +69,6 @@ func lerOpcaoMenu() int {
 }
 
 func exibirOpcoes(opcao int) {
-
-	// if opcao == 0 {
-	// 	fmt.Println("Opção selecionada: Sair")
-	// } else if opcao == 1 {
-	// 	fmt.Println("Opção Selecionada: Iniciar Monitoramento")
-	// } else if opcao == 2 {
-	// 	fmt.Println("Opção Selecionada: Exibir Log de Monitoramento")
-	// } else {
-	// 	fmt.Println("Opção Inválida")
-	// }
-
 	switch opcao {
 	case 0:
 		sairDoPrograma()
@@ -88,7 +77,7 @@ func exibirOpcoes(opcao int) {
 		// iniciarMonitoramentoSlice()
 		monitorarSitesFile()
 	case 2:
-		fmt.Println("Opção Selecionada: Exibir Log de Monitoramento")
+		exibirLog()
 	default:
 		exibirOpcaoInvalida()
 	}
@@ -129,9 +118,7 @@ func iniciarMonitoramentoSlice() {
 		"https://httpbin.org/status/404",
 		"https://httpbin.org/status/200",
 	}
-	// fmt.Println(sites)
 	sites = append(sites, "https://www.meutimao.com.br")
-	// fmt.Println(sites)
 	monitorarSitesSlice(sites)
 }
 
@@ -154,17 +141,6 @@ func monitorarSitesSlice(sites []string) {
 	fmt.Println()
 	fmt.Println(sites)
 	fmt.Println(len(sites))
-	// for i := 0; i < len(sites); i++ {
-	// 	response, _ := http.Get(sites[i])
-
-	// 	if response.StatusCode == 200 {
-	// 		fmt.Println("Site:", sites[i], " está funcionando corretamente")
-	// 	} else if response.StatusCode == 404 {
-	// 		fmt.Println("Rota não encontrada:", sites[i], " - Status: ", response.StatusCode)
-	// 	} else {
-	// 		fmt.Println("O site:", sites[i], "Não está respondendo. Status Code:", response.StatusCode)
-	// 	}
-	// }
 	for i := 0; i < timeLoops; i++ {
 		for i, site := range sites {
 			fmt.Println("Site: ", i+1)
@@ -213,12 +189,10 @@ func testarSite(site string) {
 func lerArquivoSites() []string {
 	clearScreen()
 	var retorno []string
-	// arquivo, err := os.Open("sites.txt")
 	arquivo, err := os.Open("sites.txt")
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		// fmt.Println(string(arquivo))
 		leitor := bufio.NewReader(arquivo)
 		for {
 			linha, err := leitor.ReadString('\n')
@@ -227,7 +201,6 @@ func lerArquivoSites() []string {
 			linha = strings.TrimSpace(linha)
 			retorno = append(retorno, linha)
 			if err == io.EOF {
-				// fmt.Println(err)
 				break
 			}
 
@@ -241,10 +214,10 @@ func registrarLog(site string, status int) {
 	var tituloColorido string
 	var mensagem string
 	if status != 200 {
-		tituloColorido = fmt.Sprintf(color.RedString("==================================== Registro de Log - Error ===================================="))
+		tituloColorido = fmt.Sprintf(color.RedString("======================================================== Registro de Log - Error ==================================================="))
 		mensagem = "Erro"
 	} else {
-		tituloColorido = fmt.Sprintf(color.GreenString("==================================== Registro de Log - Ok ===================================="))
+		tituloColorido = fmt.Sprintf(color.GreenString("====================================================== Registro de Log - Ok ======================================================"))
 		mensagem = "Sucesso"
 	}
 	time := fmt.Sprintf(time.Now().Local().Format("2006-01-02 15:04:05"))
@@ -262,5 +235,32 @@ func registrarLog(site string, status int) {
 	}
 	arquivo.WriteString(linha)
 	fmt.Println(linha)
+	arquivo.Close()
+}
+
+func exibirLog() {
+	clearScreen()
+	arquivo, err := os.Open("log.txt")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		leitor := bufio.NewReader(arquivo)
+		tituloColorido := fmt.Sprintf(color.YellowString("====================================================== Log Sites ==========================================================="))
+		fmt.Println(tituloColorido)
+		for {
+			linha, err := leitor.ReadString('\n')
+			linhaTrim := strings.TrimSpace(linha)
+			if !strings.Contains(linhaTrim, "200") {
+				tituloColorido := fmt.Sprintf(color.RedString(linhaTrim))
+				fmt.Println(tituloColorido)
+			} else {
+				fmt.Println(linhaTrim)
+			}
+			if err == io.EOF {
+				break
+			}
+
+		}
+	}
 	arquivo.Close()
 }
