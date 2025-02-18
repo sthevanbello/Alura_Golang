@@ -4,10 +4,10 @@ import "fmt"
 
 func main() {
 
-	var titular string = "Sthevan" // titular := "Sthevan"
+	var titular string = "Homer" // titular := "Sthevan"
 	var numeroAgencia int = 589
 	var numeroConta int = 456789
-	var saldo float64 = 125.50
+	var saldo float64 = 825.50
 
 	contaCorrente := ContaCorrente{
 		titular:       titular,
@@ -15,16 +15,15 @@ func main() {
 		numeroConta:   numeroConta,
 		saldo:         saldo}
 
-	var contaNova *ContaCorrente
-	contaNova = new(ContaCorrente)
-
-	contaNova.titular = "Homer"
-	contaNova.numeroAgencia = 123
-	contaNova.numeroConta = 456123
-	contaNova.saldo = 850.55
-
 	fmt.Println(contaCorrente)
-	fmt.Println(*contaNova)
+	fmt.Println(contaCorrente.Sacar(-10))
+	fmt.Println(contaCorrente)
+	fmt.Println(contaCorrente.Depositar(400))
+	status, saldo := contaCorrente.Depositar(150)
+	fmt.Println(status, saldo)
+	fmt.Println(contaCorrente)
+	fmt.Println(contaCorrente.Depositar(0))
+	fmt.Println(contaCorrente)
 
 }
 
@@ -33,4 +32,24 @@ type ContaCorrente struct {
 	numeroAgencia int
 	numeroConta   int
 	saldo         float64
+}
+
+func (c *ContaCorrente) Sacar(valorSaque float64) string {
+
+	if valorSaque <= 0 {
+		return "Digite um valor positivo e maior do que zero"
+	}
+	if valorSaque <= c.saldo {
+		c.saldo -= valorSaque
+		return "Saque realizado com sucesso!"
+	}
+	return "Saldo insuficiente"
+}
+
+func (c *ContaCorrente) Depositar(valorDeposito float64) (string, float64) {
+	if valorDeposito <= 0 {
+		return "Digite um valor positivo e maior do que zero", c.saldo
+	}
+	c.saldo += valorDeposito
+	return "Depósito efetuado com sucesso", c.saldo
 }
