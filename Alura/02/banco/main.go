@@ -9,22 +9,22 @@ func main() {
 	var numeroConta int = 456789
 	var saldo float64 = 825.50
 
-	contaCorrente := ContaCorrente{
+	contaCorrentePrimaria := ContaCorrente{
 		titular:       titular,
 		numeroAgencia: numeroAgencia,
 		numeroConta:   numeroConta,
 		saldo:         saldo}
 
-	fmt.Println(contaCorrente)
-	fmt.Println(contaCorrente.Sacar(-10))
-	fmt.Println(contaCorrente)
-	fmt.Println(contaCorrente.Depositar(400))
-	status, saldo := contaCorrente.Depositar(150)
-	fmt.Println(status, saldo)
-	fmt.Println(contaCorrente)
-	fmt.Println(contaCorrente.Depositar(0))
-	fmt.Println(contaCorrente)
+	contaCorrenteSecundaria := ContaCorrente{titular: "Marge", numeroAgencia: 589, numeroConta: 159753, saldo: 1500}
 
+	fmt.Println(contaCorrentePrimaria)
+	fmt.Println(contaCorrenteSecundaria)
+
+	status := contaCorrentePrimaria.Transferir(-100, &contaCorrenteSecundaria)
+	fmt.Println(status)
+
+	fmt.Println(contaCorrentePrimaria)
+	fmt.Println(contaCorrenteSecundaria)
 }
 
 type ContaCorrente struct {
@@ -52,4 +52,13 @@ func (c *ContaCorrente) Depositar(valorDeposito float64) (string, float64) {
 	}
 	c.saldo += valorDeposito
 	return "Depósito efetuado com sucesso", c.saldo
+}
+
+func (c *ContaCorrente) Transferir(valorTransferencia float64, contaDestino *ContaCorrente) bool {
+	if valorTransferencia > c.saldo || valorTransferencia <= 0 {
+		return false
+	}
+	c.saldo -= valorTransferencia
+	contaDestino.Depositar(valorTransferencia)
+	return true
 }
