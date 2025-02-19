@@ -4,14 +4,15 @@ import (
 	"banco/clientes"
 )
 
-type ContaCorrente struct {
+type ContaPoupanca struct {
 	Titular       clientes.Titular
 	NumeroAgencia int
 	NumeroConta   int
+	Operacao      int
 	saldo         float64
 }
 
-func (c *ContaCorrente) Sacar(valorSaque float64) string {
+func (c *ContaPoupanca) Sacar(valorSaque float64) string {
 
 	if valorSaque <= 0 {
 		return "Digite um valor positivo e maior do que zero"
@@ -23,7 +24,7 @@ func (c *ContaCorrente) Sacar(valorSaque float64) string {
 	return "saldo insuficiente"
 }
 
-func (c *ContaCorrente) Depositar(valorDeposito float64) (string, float64) {
+func (c *ContaPoupanca) Depositar(valorDeposito float64) (string, float64) {
 	if valorDeposito <= 0 {
 		return "Digite um valor positivo e maior do que zero", c.saldo
 	}
@@ -31,7 +32,7 @@ func (c *ContaCorrente) Depositar(valorDeposito float64) (string, float64) {
 	return "Depósito efetuado com sucesso", c.saldo
 }
 
-func (c *ContaCorrente) Transferir(valorTransferencia float64, contaDestino *ContaCorrente) bool {
+func (c *ContaPoupanca) Transferir(valorTransferencia float64, contaDestino *ContaCorrente) bool {
 	if valorTransferencia > c.saldo || valorTransferencia <= 0 {
 		return false
 	}
@@ -40,6 +41,6 @@ func (c *ContaCorrente) Transferir(valorTransferencia float64, contaDestino *Con
 	return true
 }
 
-func (c *ContaCorrente) Obtersaldo() float64 {
+func (c *ContaPoupanca) ObterSaldo() float64 {
 	return c.saldo
 }
