@@ -1,6 +1,7 @@
 package main
 
 import (
+	"WEB/produto"
 	"html/template"
 	"net/http"
 )
@@ -13,5 +14,11 @@ func main() {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	templates.ExecuteTemplate(w, "index", nil)
+
+	produtos := []produto.Produto{
+		{Name: "Camiseta", Description: "Camiseta preta", Quantity: 20, Price: 59.99},
+		{Name: "Camiseta", Description: "Camiseta Azul", Quantity: 25, Price: 49.99},
+	}
+
+	templates.ExecuteTemplate(w, "index", produtos)
 }
